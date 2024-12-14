@@ -10,7 +10,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
 
   return (
     <Tabs
@@ -36,11 +36,11 @@ export default function TabLayout() {
               height: 5
             },
             shadowOpacity: isDark ? 0.3 : 0.1,
-            shadowRadius: 15,
+            shadowRadius: 15
           },
           default: {
             height: 65,
-            backgroundColor: Colors[colorScheme ?? "light"].tabBar,
+            backgroundColor: Colors[colorScheme ?? "light"].tabBar
           }
         })
       }}
@@ -64,20 +64,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="categories"
-        options={{
-          title: "Categories",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="folder" color={color} />
-          )
-        }}
-      />
-      <Tabs.Screen
         name="stats"
         options={{
           title: "Stats",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="chart.bar" color={color} />
+          )
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="gear" color={color} />
           )
         }}
       />
