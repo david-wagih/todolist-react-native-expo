@@ -1,74 +1,145 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import Animated, { FadeInUp } from "react-native-reanimated";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Header } from "@/components/ui/Header";
+import { useColorScheme } from "@/hooks/useColorScheme";
+
+// Add type definition for task items
+type RecentTask = {
+  id: number;
+  title: string;
+  timeAgo: string;
+};
+
+// Create mock data with proper typing
+const RECENT_TASKS: RecentTask[] = [
+  { id: 1, title: 'Task 1', timeAgo: '2 hours ago' },
+  { id: 2, title: 'Task 2', timeAgo: '3 hours ago' },
+  { id: 3, title: 'Task 3', timeAgo: '5 hours ago' },
+];
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ThemedView style={styles.container}>
+      <Header 
+        title="Welcome Back" 
+        subtitle="Today's Overview"
+      />
+
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View 
+          entering={FadeInUp.delay(100)}
+          style={[
+            styles.summaryCard,
+            {
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#F8F9FA',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#E9ECEF',
+            }
+          ]}
+        >
+          <ThemedView style={styles.summaryContent}>
+            <ThemedText style={styles.summaryTitle}>Daily Progress</ThemedText>
+            <ThemedView style={styles.progressRow}>
+              <ThemedText style={styles.progressNumber}>8/12</ThemedText>
+              <ThemedText style={styles.progressLabel}>tasks completed</ThemedText>
+            </ThemedView>
+          </ThemedView>
+        </Animated.View>
+
+        <ThemedText style={styles.sectionTitle}>Recent Tasks</ThemedText>
+        
+        {/* Recent Tasks Cards */}
+        {RECENT_TASKS.map((task) => (
+          <Animated.View
+            key={task.id}
+            entering={FadeInUp.delay(150 + task.id * 100)}
+            style={[
+              styles.taskCard,
+              {
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#F8F9FA',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#E9ECEF',
+              }
+            ]}
+          >
+            <ThemedText style={styles.taskTitle}>{task.title}</ThemedText>
+            <ThemedText style={styles.taskTime}>{task.timeAgo}</ThemedText>
+          </Animated.View>
+        ))}
+      </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    padding: 20,
+    paddingTop: Platform.OS === 'ios' ? 140 : 120,
+  },
+  summaryCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    marginBottom: 25,
+    overflow: 'hidden',
+  },
+  summaryContent: {
+    padding: 20,
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+    opacity: 0.8,
+  },
+  progressRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  progressNumber: {
+    fontSize: 40,
+    lineHeight: 48,
+    fontWeight: '600',
+    letterSpacing: -1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  progressLabel: {
+    fontSize: 16,
+    opacity: 0.6,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 15,
+    opacity: 0.8,
+  },
+  taskCard: {
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginBottom: 12,
+  },
+  taskTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  taskTime: {
+    fontSize: 14,
+    opacity: 0.6,
   },
 });
